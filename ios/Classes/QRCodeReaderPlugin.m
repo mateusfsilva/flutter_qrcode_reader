@@ -24,8 +24,6 @@ UIViewController *_viewController;
 
 float height;
 float width;
-float landscapeheight;
-float portraitheight;
 
 
 + (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar>*)registrar {
@@ -63,9 +61,8 @@ float portraitheight;
         _viewController = viewController;
         _viewController.view.backgroundColor = [UIColor clearColor];
         _viewController.view.opaque = NO;
-        [[ NSNotificationCenter defaultCenter]addObserver: self selector:@selector(rotate:)
-                                              name:UIDeviceOrientationDidChangeNotification object:nil];
     }
+
     return self;
 }
 
@@ -87,13 +84,10 @@ float portraitheight;
 
 
 -(void)loadViewQRCode {
-    portraitheight = height = [UIScreen mainScreen].applicationFrame.size.height;
-    landscapeheight = width = [UIScreen mainScreen].applicationFrame.size.width;
-    if(UIDeviceOrientationIsLandscape([[UIDevice currentDevice] orientation])){
-        landscapeheight = height;
-        portraitheight = width;
-    }
-    _qrcodeview= [[UIView alloc] initWithFrame:CGRectMake(0, 0, width, height) ];
+    height = [UIScreen mainScreen].applicationFrame.size.height;
+    width = [UIScreen mainScreen].applicationFrame.size.width;
+
+    _qrcodeview = [[UIView alloc] initWithFrame:CGRectMake(0, 0, width, height) ];
     _qrcodeview.opaque = NO;
     _qrcodeview.backgroundColor = [UIColor whiteColor];
     _qrcodeViewController.view = _qrcodeview;
@@ -101,7 +95,7 @@ float portraitheight;
 
 
 - (void)viewQRCodeDidLoad {
-    _viewPreview = [[UIView alloc] initWithFrame:CGRectMake(0, 0, width, height+height/10) ];
+    _viewPreview = [[UIView alloc] initWithFrame:CGRectMake(0, 0, width, height) ];
     _viewPreview.backgroundColor = [UIColor whiteColor];
     [_qrcodeViewController.view addSubview:_viewPreview];
     _buttonCancel = [UIButton buttonWithType:UIButtonTypeRoundedRect];
@@ -119,7 +113,9 @@ float portraitheight;
     if (_isReading) return NO;
     _isReading = YES;
     NSError *error;
+
     AVCaptureDevice *captureDevice;
+
     if ([self isFrontCamera]) {
         captureDevice = [AVCaptureDevice defaultDeviceWithDeviceType: AVCaptureDeviceTypeBuiltInWideAngleCamera
                                                                                 mediaType: AVMediaTypeVideo
@@ -129,10 +125,12 @@ float portraitheight;
     }
 
     AVCaptureDeviceInput *input = [AVCaptureDeviceInput deviceInputWithDevice:captureDevice error:&error];
+
     if (!input) {
         NSLog(@"%@", [error localizedDescription]);
         return NO;
     }
+
     _captureSession = [[AVCaptureSession alloc] init];
     [_captureSession addInput:input];
     AVCaptureMetadataOutput *captureMetadataOutput = [[AVCaptureMetadataOutput alloc] init];
@@ -144,6 +142,7 @@ float portraitheight;
     _videoPreviewLayer = [[AVCaptureVideoPreviewLayer alloc] initWithSession:_captureSession];
     [_videoPreviewLayer setVideoGravity:AVLayerVideoGravityResizeAspectFill];
     [_videoPreviewLayer setFrame:_viewPreview.layer.bounds];
+    [_videoPreviewLayer.connection setVideoOrientation:AVCaptureVideoOrientationPortrait];
     [_viewPreview.layer addSublayer:_videoPreviewLayer];
     [_captureSession startRunning];
     return YES;
@@ -161,25 +160,6 @@ float portraitheight;
     }
 }
 
-
-- (void) rotate:(NSNotification *) notification{
-    UIInterfaceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;
-    if (orientation == 1) {
-        height = portraitheight;
-        width = landscapeheight;
-        _buttonCancel.frame = CGRectMake(width/2-width/8, height-height/20, width/4, height/20);
-    } else {
-        height = landscapeheight;
-        width = portraitheight;
-        _buttonCancel.frame = CGRectMake(width/2-width/8, height-height/10, width/4, height/20);
-    }
-    _qrcodeview.frame = CGRectMake(0, 0, width, height) ;
-    _viewPreview = [[UIView alloc] initWithFrame:CGRectMake(0, 0, width, height+height/10) ];
-    [_videoPreviewLayer setFrame:_viewPreview.layer.bounds];
-    [_qrcodeViewController viewWillLayoutSubviews];
-}
-
-
 -(void)stopReading{
     [_captureSession stopRunning];
     _captureSession = nil;
@@ -188,6 +168,5 @@ float portraitheight;
     [self closeQRCodeView];
     _result(nil);
 }
-
 
 @end
