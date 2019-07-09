@@ -95,7 +95,7 @@ float width;
 
 
 - (void)viewQRCodeDidLoad {
-    _viewPreview = [[UIView alloc] initWithFrame:CGRectMake(0, 0, width, height) ];
+    _viewPreview = [[UIView alloc] initWithFrame:CGRectMake(0, 0, width, height+height/10) ];
     _viewPreview.backgroundColor = [UIColor whiteColor];
     [_qrcodeViewController.view addSubview:_viewPreview];
     _buttonCancel = [UIButton buttonWithType:UIButtonTypeRoundedRect];
