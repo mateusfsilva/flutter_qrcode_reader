@@ -98,7 +98,7 @@ float width;
     float _margin = 0.0;
     
     if(!UIDeviceOrientationIsLandscape([[UIDevice currentDevice] orientation])){
-        _margin = UIApplication.sharedApplication.keyWindow.safeAreaLayoutGuide.
+        _margin = UIApplication.sharedApplication.keyWindow.safeAreaInsets.bottom;
     }
     
     _viewPreview = [[UIView alloc] initWithFrame:CGRectMake(0, 0, width, height+height/10) ];
