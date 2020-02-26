@@ -101,11 +101,17 @@ float portraitheight;
 
 
 - (void)viewQRCodeDidLoad {
+    _margin = 0.0;
+    
+    if(!UIDeviceOrientationIsLandscape([[UIDevice currentDevice] orientation])){
+        _margin = UIApplication.sharedApplication.keyWindow.safeAreaLayoutGuide.
+    }
+    
     _viewPreview = [[UIView alloc] initWithFrame:CGRectMake(0, 0, width, height+height/10) ];
     _viewPreview.backgroundColor = [UIColor whiteColor];
     [_qrcodeViewController.view addSubview:_viewPreview];
     _buttonCancel = [UIButton buttonWithType:UIButtonTypeRoundedRect];
-    _buttonCancel.frame = CGRectMake(width/2-width/8, height-height/20, width/4, height/20);
+    _buttonCancel.frame = CGRectMake(width/2-width/8, height-height/20 - _viewPreview.view., width/4, height/20);
     [_buttonCancel setTitle:@"CANCEL"forState:UIControlStateNormal];
     [_buttonCancel addTarget:self action:@selector(stopReading) forControlEvents:UIControlEventTouchUpInside];
     [_qrcodeViewController.view addSubview:_buttonCancel];
