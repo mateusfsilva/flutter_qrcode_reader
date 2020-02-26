@@ -95,7 +95,7 @@ float width;
 
 
 - (void)viewQRCodeDidLoad {
-    _margin = 0.0;
+    float _margin = 0.0;
     
     if(!UIDeviceOrientationIsLandscape([[UIDevice currentDevice] orientation])){
         _margin = UIApplication.sharedApplication.keyWindow.safeAreaLayoutGuide.
